@@ -35,11 +35,11 @@ const DealModal = ({ deal, isOpen, onClose, onExternalLink }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-surface rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+transition={{ duration: 0.3 }}
+            className="bg-surface rounded-xl shadow-2xl max-w-2xl w-full max-h-screen overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <button
                 onClick={onClose}
                 className="absolute top-4 right-4 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70 transition-all duration-200 z-10"
@@ -57,9 +57,9 @@ const DealModal = ({ deal, isOpen, onClose, onExternalLink }) => {
               <div className="absolute bottom-4 right-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-medium">
                 {deal.source || 'LTD Hunt'}
               </div>
-            </div>
+</div>
             
-            <div className="p-6">
+            <div className="p-6 flex-1 overflow-y-auto">
               <h2 className="font-display font-bold text-2xl text-secondary mb-4">
                 {deal.title}
               </h2>

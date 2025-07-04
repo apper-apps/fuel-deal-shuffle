@@ -3,14 +3,24 @@ import { ToastContainer } from 'react-toastify'
 import Layout from '@/components/organisms/Layout'
 import Home from '@/components/pages/Home'
 import DealManagement from '@/components/pages/DealManagement'
+import UserProfile from '@/components/pages/UserProfile'
+import UserFavorites from '@/components/pages/UserFavorites'
+import RecentlyViewed from '@/components/pages/RecentlyViewed'
 
 function App() {
   return (
     <div className="App">
-      <Routes>
+<Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="deals/manage" element={<DealManagement />} />
+          <Route path="user/*" element={
+            <Routes>
+              <Route index element={<DealManagement />} />
+              <Route path="profile" element={<UserProfile />} />
+              <Route path="favorites" element={<UserFavorites />} />
+              <Route path="recently-viewed" element={<RecentlyViewed />} />
+            </Routes>
+          } />
         </Route>
       </Routes>
       <ToastContainer

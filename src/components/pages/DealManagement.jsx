@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
-import { useNavigate } from 'react-router-dom'
-import ApperIcon from '@/components/ApperIcon'
-import Button from '@/components/atoms/Button'
-import FormField from '@/components/molecules/FormField'
-import Loading from '@/components/ui/Loading'
-import Error from '@/components/ui/Error'
-import { useDeals } from '@/hooks/useDeals'
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDeals } from "@/hooks/useDeals";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import FormField from "@/components/molecules/FormField";
 
 const DealManagement = () => {
   const navigate = useNavigate()
@@ -115,28 +115,15 @@ const DealManagement = () => {
 
   if (loading) return <Loading />
   if (error) return <Error message={error} />
-
-  return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="p-2"
-            >
-              <ApperIcon name="ArrowLeft" className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="font-display text-3xl font-bold text-secondary">
-                Deal Management
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Edit deals, manage affiliate links, and organize your content
-              </p>
-            </div>
+return (
+    <div className="max-w-7xl mx-auto">
+      {/* Stats Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-600">
+              Edit deals, manage affiliate links, and organize your content
+            </p>
           </div>
           <div className="flex items-center space-x-3">
             <span className="text-sm text-gray-600">
@@ -144,6 +131,7 @@ const DealManagement = () => {
             </span>
           </div>
         </div>
+      </div>
 
         {/* Filters and Search */}
         <div className="bg-surface rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -347,11 +335,11 @@ const DealManagement = () => {
             <p className="text-gray-500">
               Try adjusting your search or filter criteria
             </p>
-          </div>
-        )}
-      </div>
+</div>
+      )}
+    </div>
 
-      {/* Edit Modal */}
+    {/* Edit Modal */}
       {editingDeal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-surface rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
@@ -422,7 +410,7 @@ const DealManagement = () => {
               </div>
             </div>
           </div>
-        </div>
+</div>
       )}
     </div>
   )
