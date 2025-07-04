@@ -11,14 +11,18 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
   const [rssUrl, setRssUrl] = useState('https://ltdhunt.com/rss')
   const [singleUrl, setSingleUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-
-  const handleFetchRSS = async () => {
+  const [autoRefresh, setAutoRefresh] = useState(false)
+  const [refreshInterval, setRefreshInterval] = useState(60)
+  const [rssStatus, setRssStatus] = useState('idle') // idle, fetching, success, error
+  const [lastFetch, setLastFetch] = useState(null)
+const handleFetchRSS = async () => {
     if (!rssUrl.trim()) {
       toast.error('Please enter an RSS URL')
       return
     }
 
     setIsLoading(true)
+    setRssStatus('fetching')
     try {
       // Simulate RSS fetching
       await new Promise(resolve => setTimeout(resolve, 2000))
@@ -32,7 +36,8 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
           thumbnail: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&q=80',
           source: 'LTD Hunt',
           fetchedAt: new Date().toISOString(),
-          viewCount: 0
+          viewCount: 0,
+          affiliateLink: ''
         },
         {
           Id: Date.now() + 1,
@@ -42,7 +47,8 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
           thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80',
           source: 'LTD Hunt',
           fetchedAt: new Date().toISOString(),
-          viewCount: 0
+          viewCount: 0,
+          affiliateLink: ''
         }
       ]
 
@@ -50,14 +56,26 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
         await dealService.create(deal)
       }
 
+      setRssStatus('success')
+      setLastFetch(new Date())
       toast.success(`Successfully fetched ${mockDeals.length} deals from RSS`)
       onDealsUpdate()
       setRssUrl('')
     } catch (error) {
+      setRssStatus('error')
       toast.error('Failed to fetch RSS feed')
       console.error('RSS fetch error:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleToggleAutoRefresh = () => {
+    setAutoRefresh(!autoRefresh)
+    if (!autoRefresh) {
+      toast.success(`Auto-refresh enabled (${refreshInterval} minutes)`)
+    } else {
+      toast.info('Auto-refresh disabled')
     }
   }
 
@@ -129,13 +147,27 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
               </div>
             </div>
 
-            <div className="p-6 space-y-8">
+<div className="p-6 space-y-8">
               {/* RSS Feed Section */}
               <div className="space-y-4">
-                <h3 className="font-display font-semibold text-lg text-secondary flex items-center">
-                  <ApperIcon name="Rss" className="w-5 h-5 mr-2 text-accent" />
-                  RSS Feed Importer
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display font-semibold text-lg text-secondary flex items-center">
+                    <ApperIcon name="Rss" className="w-5 h-5 mr-2 text-accent" />
+                    RSS Feed Manager
+                  </h3>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${
+                      rssStatus === 'fetching' ? 'bg-yellow-500 animate-pulse' :
+                      rssStatus === 'success' ? 'bg-green-500' :
+                      rssStatus === 'error' ? 'bg-red-500' : 'bg-gray-400'
+                    }`}></div>
+                    <span className="text-sm text-gray-600">
+                      {rssStatus === 'fetching' ? 'Fetching...' :
+                       rssStatus === 'success' ? 'Connected' :
+                       rssStatus === 'error' ? 'Error' : 'Idle'}
+                    </span>
+                  </div>
+                </div>
                 
                 <FormField
                   label="RSS Feed URL"
@@ -144,25 +176,61 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
                   placeholder="https://ltdhunt.com/rss"
                   helperText="Enter the RSS feed URL to automatically fetch deals"
                 />
-                
-                <Button
-                  variant="primary"
-                  onClick={handleFetchRSS}
-                  disabled={isLoading}
-                  className="w-full glow-on-hover"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Fetching RSS...
-                    </>
-                  ) : (
-                    <>
-                      <ApperIcon name="Download" className="w-4 h-4 mr-2" />
-                      Fetch RSS Feed
-                    </>
-                  )}
-                </Button>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Button
+                    variant="primary"
+                    onClick={handleFetchRSS}
+                    disabled={isLoading}
+                    className="glow-on-hover"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Fetching...
+                      </>
+                    ) : (
+                      <>
+                        <ApperIcon name="Download" className="w-4 h-4 mr-2" />
+                        Manual Fetch
+                      </>
+                    )}
+                  </Button>
+
+                  <Button
+                    variant={autoRefresh ? "accent" : "secondary"}
+                    onClick={handleToggleAutoRefresh}
+                    className="glow-on-hover"
+                  >
+                    <ApperIcon name={autoRefresh ? "PauseCircle" : "PlayCircle"} className="w-4 h-4 mr-2" />
+                    {autoRefresh ? 'Auto On' : 'Auto Off'}
+                  </Button>
+                </div>
+
+                {autoRefresh && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Refresh Interval (minutes)
+                    </label>
+                    <select
+                      value={refreshInterval}
+                      onChange={(e) => setRefreshInterval(Number(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                      <option value={15}>15 minutes</option>
+                      <option value={30}>30 minutes</option>
+                      <option value={60}>1 hour</option>
+                      <option value={120}>2 hours</option>
+                      <option value={360}>6 hours</option>
+                    </select>
+                  </div>
+                )}
+
+                {lastFetch && (
+                  <p className="text-sm text-gray-600">
+                    Last fetch: {lastFetch.toLocaleString()}
+                  </p>
+                )}
               </div>
 
               {/* Divider */}
@@ -201,6 +269,37 @@ const BackendPanel = ({ isOpen, onClose, onDealsUpdate }) => {
                     </>
                   )}
                 </Button>
+</div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200"></div>
+
+              {/* Deal Management Quick Actions */}
+              <div className="space-y-4">
+                <h3 className="font-display font-semibold text-lg text-secondary flex items-center">
+                  <ApperIcon name="Settings" className="w-5 h-5 mr-2 text-accent" />
+                  Deal Management
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Button
+                    variant="accent"
+                    onClick={() => window.open('/deals/manage', '_blank')}
+                    className="glow-on-hover"
+                  >
+                    <ApperIcon name="Edit" className="w-4 h-4 mr-2" />
+                    Edit Deals
+                  </Button>
+                  
+                  <Button
+                    variant="secondary"
+                    onClick={() => onDealsUpdate()}
+                    className="glow-on-hover"
+                  >
+                    <ApperIcon name="RefreshCw" className="w-4 h-4 mr-2" />
+                    Refresh List
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>

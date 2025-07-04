@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import Layout from '@/components/organisms/Layout'
 import Home from '@/components/pages/Home'
+import DealManagement from '@/components/pages/DealManagement'
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="deals/manage" element={<DealManagement />} />
         </Route>
       </Routes>
       <ToastContainer

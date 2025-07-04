@@ -22,7 +22,7 @@ const Header = ({
         <div className="flex items-center justify-between h-16">
           <Logo size="md" />
           
-          <div className="flex items-center space-x-6">
+<div className="flex items-center space-x-6">
             <NavigationControls
               onPrevious={onPrevious}
               onNext={onNext}
@@ -31,6 +31,12 @@ const Header = ({
               canGoBack={canGoBack}
               canGoForward={canGoForward}
             />
+
+            {/* RSS Status Indicator */}
+            <div className="flex items-center space-x-2 px-3 py-1 bg-gray-100 rounded-full">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs font-medium text-gray-700">RSS Active</span>
+            </div>
             
             <ViewToggle 
               viewMode={viewMode} 

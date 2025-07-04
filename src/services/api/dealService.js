@@ -65,6 +65,92 @@ class DealService {
         }
       }, 250)
     })
+}
+
+  async updateAffiliateLink(id, affiliateLink) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const index = this.deals.findIndex(d => d.Id === id)
+        if (index !== -1) {
+          // Validate affiliate link format
+          if (affiliateLink && !this.isValidUrl(affiliateLink)) {
+            reject(new Error('Invalid affiliate link format'))
+            return
+          }
+          
+          this.deals[index] = { 
+            ...this.deals[index], 
+            affiliateLink: affiliateLink || '',
+            updatedAt: new Date().toISOString()
+          }
+          resolve({ ...this.deals[index] })
+        } else {
+          reject(new Error('Deal not found'))
+        }
+      }, 200)
+    })
+  }
+
+  async getRssStatus() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          status: 'active',
+          lastFetch: new Date().toISOString(),
+          nextScheduled: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+          totalFetched: this.deals.length
+        })
+      }, 100)
+    })
+  }
+
+  async updateRssSchedule(enabled, interval) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          enabled,
+          interval,
+          nextRun: enabled ? new Date(Date.now() + interval * 60 * 1000).toISOString() : null,
+          updatedAt: new Date().toISOString()
+        })
+      }, 150)
+    })
+  }
+
+  isValidUrl(string) {
+    try {
+      new URL(string)
+      return true
+    } catch (_) {
+      return false
+    }
+  }
+
+  async searchDeals(query, filters = {}) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        let filtered = [...this.deals]
+        
+        if (query) {
+          filtered = filtered.filter(deal => 
+            deal.title.toLowerCase().includes(query.toLowerCase()) ||
+            deal.description.toLowerCase().includes(query.toLowerCase())
+          )
+        }
+        
+        if (filters.source) {
+          filtered = filtered.filter(deal => deal.source === filters.source)
+        }
+        
+        if (filters.hasAffiliateLink !== undefined) {
+          filtered = filtered.filter(deal => 
+            filters.hasAffiliateLink ? deal.affiliateLink : !deal.affiliateLink
+          )
+        }
+        
+        resolve(filtered)
+      }, 200)
+    })
   }
 }
 

@@ -5,7 +5,12 @@ export const useDeals = () => {
   const [deals, setDeals] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
+  const [rssSchedule, setRssSchedule] = useState({
+    enabled: false,
+    interval: 60,
+    lastRun: null,
+    status: 'idle'
+  })
   const loadDeals = async () => {
     try {
       setLoading(true)
@@ -55,13 +60,64 @@ export const useDeals = () => {
     loadDeals()
   }, [])
 
+const toggleRssSchedule = (enabled, interval = 60) => {
+    setRssSchedule(prev => ({
+      ...prev,
+      enabled,
+      interval,
+      status: enabled ? 'scheduled' : 'idle'
+    }))
+  }
+
+  const updateRssStatus = (status, lastRun = null) => {
+    setRssSchedule(prev => ({
+      ...prev,
+      status,
+      lastRun: lastRun || new Date()
+    }))
+  }
+
+  const updateAffiliateLink = async (id, affiliateLink) => {
+    try {
+      const updatedDeal = await dealService.updateAffiliateLink(id, affiliateLink)
+      setDeals(prevDeals => 
+        prevDeals.map(deal => deal.Id === id ? updatedDeal : deal)
+      )
+      return updatedDeal
+    } catch (err) {
+      throw new Error('Failed to update affiliate link')
+    }
+  }
+
+  const bulkUpdateDeals = async (dealIds, updateData) => {
+    try {
+      const promises = dealIds.map(id => dealService.update(id, updateData))
+      const updatedDeals = await Promise.all(promises)
+      
+      setDeals(prevDeals => 
+        prevDeals.map(deal => {
+          const updated = updatedDeals.find(u => u.Id === deal.Id)
+          return updated || deal
+        })
+      )
+      return updatedDeals
+    } catch (err) {
+      throw new Error('Failed to bulk update deals')
+    }
+  }
+
   return {
     deals,
     loading,
     error,
+    rssSchedule,
     loadDeals,
     createDeal,
     updateDeal,
-    deleteDeal
+    deleteDeal,
+    toggleRssSchedule,
+    updateRssStatus,
+    updateAffiliateLink,
+    bulkUpdateDeals
   }
 }
