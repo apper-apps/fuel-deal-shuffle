@@ -1,0 +1,82 @@
+[
+  {
+    "Id": 1,
+    "title": "Lifetime Access to Premium Project Management Suite",
+    "url": "https://ltdhunt.com/deals/project-management-suite",
+    "description": "Transform your team's productivity with this comprehensive project management platform. Features include task tracking, team collaboration, time management, and advanced reporting. Perfect for startups and growing businesses.",
+    "thumbnail": "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T10:30:00Z",
+    "viewCount": 45
+  },
+  {
+    "Id": 2,
+    "title": "All-in-One Marketing Automation Platform - 95% Off",
+    "url": "https://ltdhunt.com/deals/marketing-automation",
+    "description": "Streamline your marketing efforts with email campaigns, social media scheduling, lead generation, and analytics. Includes drag-and-drop email builder, advanced segmentation, and conversion tracking.",
+    "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T09:15:00Z",
+    "viewCount": 78
+  },
+  {
+    "Id": 3,
+    "title": "Professional Design System & UI Kit Bundle",
+    "url": "https://ltdhunt.com/deals/design-system-bundle",
+    "description": "Complete design system with 500+ components, icons, and templates. Perfect for designers and developers. Includes Figma files, Sketch resources, and HTML/CSS components.",
+    "thumbnail": "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T08:45:00Z",
+    "viewCount": 32
+  },
+  {
+    "Id": 4,
+    "title": "Advanced Analytics & Reporting Dashboard",
+    "url": "https://ltdhunt.com/deals/analytics-dashboard",
+    "description": "Powerful analytics platform with real-time data visualization, custom reports, and business intelligence features. Track KPIs, generate insights, and make data-driven decisions.",
+    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T07:20:00Z",
+    "viewCount": 67
+  },
+  {
+    "Id": 5,
+    "title": "Cloud Storage & File Sharing Solution - Lifetime Deal",
+    "url": "https://ltdhunt.com/deals/cloud-storage-solution",
+    "description": "Secure cloud storage with 1TB space, advanced sharing controls, and collaboration features. Perfect for teams and businesses. Includes mobile apps and desktop sync.",
+    "thumbnail": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T06:30:00Z",
+    "viewCount": 23
+  },
+  {
+    "Id": 6,
+    "title": "E-commerce Store Builder with Payment Integration",
+    "url": "https://ltdhunt.com/deals/ecommerce-builder",
+    "description": "Build professional online stores with drag-and-drop interface. Includes payment processing, inventory management, and marketing tools. No coding required.",
+    "thumbnail": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T05:45:00Z",
+    "viewCount": 91
+  },
+  {
+    "Id": 7,
+    "title": "SEO & Content Optimization Toolkit",
+    "url": "https://ltdhunt.com/deals/seo-content-toolkit",
+    "description": "Comprehensive SEO tools including keyword research, content optimization, backlink analysis, and rank tracking. Boost your website's search engine visibility.",
+    "thumbnail": "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T04:15:00Z",
+    "viewCount": 56
+  },
+  {
+    "Id": 8,
+    "title": "Video Creation & Editing Platform",
+    "url": "https://ltdhunt.com/deals/video-creation-platform",
+    "description": "Create professional videos with templates, stock footage, and editing tools. Perfect for social media, marketing, and educational content. Cloud-based with collaboration features.",
+    "thumbnail": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "source": "LTD Hunt",
+    "fetchedAt": "2024-01-15T03:30:00Z",
+    "viewCount": 84
+  }
+]
