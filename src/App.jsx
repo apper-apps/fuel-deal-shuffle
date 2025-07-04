@@ -19,8 +19,9 @@ function App() {
               <Route path="profile" element={<UserProfile />} />
               <Route path="favorites" element={<UserFavorites />} />
               <Route path="recently-viewed" element={<RecentlyViewed />} />
-            </Routes>
+</Routes>
           } />
+          <Route path="manage" element={<DealManagement />} />
         </Route>
       </Routes>
       <ToastContainer

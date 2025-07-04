@@ -27,21 +27,25 @@ const Layout = () => {
       path: '/user/favorites', 
       icon: 'Heart'
     },
-    {
+{
       name: 'Recently Viewed',
       path: '/user/recently-viewed',
       icon: 'Clock'
+    },
+    {
+      name: 'Manage Deals',
+      path: '/manage',
+      icon: 'Settings'
     }
   ]
-
-  const isActivePath = (path) => {
+const isActivePath = (path) => {
     if (path === '/user') {
       return location.pathname === '/user' || location.pathname === '/user/'
     }
     return location.pathname === path
   }
 
-  if (!isUserDashboard) {
+if (!isUserDashboard && !location.pathname.startsWith('/manage')) {
     return (
       <div className="min-h-screen bg-background">
         <Outlet />

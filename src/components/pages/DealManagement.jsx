@@ -20,9 +20,8 @@ const DealManagement = () => {
     bulkUpdateDeals
   } = useDeals()
   
-  const [searchQuery, setSearchQuery] = useState('')
+const [searchQuery, setSearchQuery] = useState('')
   const [selectedDeals, setSelectedDeals] = useState([])
-  const [editingDeal, setEditingDeal] = useState(null)
   const [filterSource, setFilterSource] = useState('all')
   const [showAffiliateOnly, setShowAffiliateOnly] = useState(false)
 
@@ -35,21 +34,7 @@ const DealManagement = () => {
     return matchesSearch && matchesSource && matchesAffiliate
   })
 
-  const sources = [...new Set(deals.map(deal => deal.source))]
-
-  const handleEditDeal = (deal) => {
-    setEditingDeal({ ...deal })
-  }
-
-  const handleSaveEdit = async () => {
-    try {
-      await updateDeal(editingDeal.Id, editingDeal)
-      toast.success('Deal updated successfully')
-      setEditingDeal(null)
-    } catch (error) {
-      toast.error('Failed to update deal')
-    }
-  }
+const sources = [...new Set(deals.map(deal => deal.source))]
 
   const handleUpdateAffiliateLink = async (dealId, affiliateLink) => {
     try {
@@ -293,15 +278,7 @@ if (loading) return <Loading />
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 ml-4">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleEditDeal(deal)}
-                      >
-                        <ApperIcon name="Edit" className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
+<div className="flex items-center space-x-2 ml-4">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -337,81 +314,7 @@ if (loading) return <Loading />
             Try adjusting your search or filter criteria
           </p>
         </div>
-      )}
-      
-      {/* Edit Modal */}
-      {editingDeal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-primary to-purple-600 text-white p-6">
-              <div className="flex items-center justify-between">
-                <h2 className="font-display font-bold text-xl">Edit Deal</h2>
-                <button
-                  onClick={() => setEditingDeal(null)}
-                  className="text-white hover:text-purple-200 transition-colors duration-200"
-                >
-                  <ApperIcon name="X" className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-4 max-h-[calc(90vh-120px)] overflow-y-auto">
-              <FormField
-                label="Title"
-                value={editingDeal.title}
-                onChange={(e) => setEditingDeal(prev => ({ ...prev, title: e.target.value }))}
-              />
-              
-              <FormField
-                label="Description"
-                value={editingDeal.description}
-                onChange={(e) => setEditingDeal(prev => ({ ...prev, description: e.target.value }))}
-                type="textarea"
-                rows={4}
-              />
-              
-              <FormField
-                label="Deal URL"
-                value={editingDeal.url}
-                onChange={(e) => setEditingDeal(prev => ({ ...prev, url: e.target.value }))}
-                type="url"
-              />
-              
-              <FormField
-                label="Thumbnail URL"
-                value={editingDeal.thumbnail}
-                onChange={(e) => setEditingDeal(prev => ({ ...prev, thumbnail: e.target.value }))}
-                type="url"
-              />
-              
-              <FormField
-                label="Affiliate Link"
-                value={editingDeal.affiliateLink || ''}
-                onChange={(e) => setEditingDeal(prev => ({ ...prev, affiliateLink: e.target.value }))}
-                type="url"
-                helperText="Optional affiliate link for commission tracking"
-              />
-
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                <Button
-                  variant="secondary"
-                  onClick={() => setEditingDeal(null)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleSaveEdit}
-                  className="glow-on-hover"
-                >
-                  <ApperIcon name="Save" className="w-4 h-4 mr-2" />
-                  Save Changes
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+)}
     </div>
   )
 }
