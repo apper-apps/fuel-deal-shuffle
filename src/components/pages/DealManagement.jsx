@@ -217,20 +217,20 @@ return (
                 </label>
                 <Input
                   value={newDeal.title}
-                  onChange={(e) => setNewDeal(prev => ({ ...prev, title: e.target.value }))}
+onChange={(e) => setNewDeal(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Enter deal title..."
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Link (Original URL) *
+                  Deal URL (Paste URL to parse automatically) *
                 </label>
                 <Input
                   type="url"
                   value={newDeal.url}
                   onChange={(e) => setNewDeal(prev => ({ ...prev, url: e.target.value }))}
-                  placeholder="https://example.com/deal"
+                  placeholder="https://example.com/deal - Paste any deal URL here"
                   required
                 />
               </div>

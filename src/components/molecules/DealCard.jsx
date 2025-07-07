@@ -15,19 +15,24 @@ const DealCard = ({ deal, onView, onExternalLink, className = '' }) => {
       transition={{ duration: 0.3 }}
       className={`bg-surface rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer ${className}`}
       onClick={onView}
-    >
+>
       <div className="relative">
         <img 
-          src={deal.thumbnail || 'https://via.placeholder.com/400x200?text=Deal+Image'} 
+          src={deal.thumbnail || `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`} 
           alt={deal.title}
           className="w-full h-48 object-cover"
           onError={handleImageError}
+          loading="lazy"
         />
         <div className="absolute top-4 right-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-medium">
           {deal.source || 'LTD Hunt'}
         </div>
+        {!deal.thumbnail && (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+            <ApperIcon name="Image" className="w-12 h-12 text-gray-400" />
+          </div>
+        )}
       </div>
-      
       <div className="p-6">
         <h3 className="font-display font-bold text-xl text-secondary mb-2 line-clamp-2">
           {deal.title}
