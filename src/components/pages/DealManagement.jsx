@@ -130,7 +130,7 @@ const handleFetchUrl = async () => {
         url: links.url !== undefined ? links.url : deals.find(d => d.Id === dealId)?.url,
         affiliateLink: links.affiliateLink !== undefined ? links.affiliateLink : deals.find(d => d.Id === dealId)?.affiliateLink
       })
-      toast.success('Links updated successfully')
+toast.success('Deal information updated successfully')
       setEditingLinks(prev => ({ ...prev, [dealId]: false }))
       setPendingLinks(prev => {
         const newState = { ...prev }

@@ -146,7 +146,7 @@ isValidUrl(string) {
     }
   }
 
-  async fetchUrlData(url) {
+async fetchUrlData(url) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!this.isValidUrl(url)) {
@@ -160,13 +160,65 @@ isValidUrl(string) {
           title: this.generateTitleFromUrl(url),
           description: this.generateDescriptionFromUrl(url),
           source: this.getSourceFromDomain(domain),
-          thumbnail: `https://images.unsplash.com/photo-${Date.now() % 1000000}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
+          thumbnail: this.generateThumbnailFromUrl(url, domain),
           affiliateLink: ''
         }
 
         resolve(mockData)
       }, 1000) // Simulate network delay
     })
+  }
+
+  generateThumbnailFromUrl(url, domain) {
+    // Simulate different thumbnail extraction based on domain
+    const imageCategories = [
+      'photo-1556742049-0cfed4f6a45d', // tech/business
+      'photo-1460925895917-afdab827c52f', // marketing
+      'photo-1561070791-2526d30994b5', // design
+      'photo-1551288049-bebda4e38f71', // analytics
+      'photo-1544197150-b99a580bb7a8', // storage
+      'photo-1432888498266-38ffec3eaf0a', // seo
+      'photo-1574717024653-61fd2cf4d44d'  // video
+    ]
+    
+    // Select thumbnail based on domain characteristics
+    let selectedImage = imageCategories[0] // default
+    
+    if (domain.includes('amazon') || domain.includes('ebay')) {
+      selectedImage = imageCategories[0] // business/tech
+    } else if (domain.includes('marketing') || domain.includes('social')) {
+      selectedImage = imageCategories[1] // marketing
+    } else if (domain.includes('design') || domain.includes('ui')) {
+      selectedImage = imageCategories[2] // design
+    } else if (domain.includes('analytics') || domain.includes('data')) {
+      selectedImage = imageCategories[3] // analytics
+    } else if (domain.includes('cloud') || domain.includes('storage')) {
+      selectedImage = imageCategories[4] // storage
+    } else if (domain.includes('seo') || domain.includes('content')) {
+      selectedImage = imageCategories[5] // seo
+    } else if (domain.includes('video') || domain.includes('media')) {
+      selectedImage = imageCategories[6] // video
+    }
+    
+    return `https://images.unsplash.com/${selectedImage}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
+  }
+
+  isValidImageUrl(url) {
+    if (!url) return false
+    try {
+      const urlObj = new URL(url)
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
+      const hasValidExtension = validExtensions.some(ext => 
+        urlObj.pathname.toLowerCase().endsWith(ext)
+      )
+      const isUnsplash = urlObj.hostname.includes('unsplash.com')
+      const isValidImageHost = ['images.unsplash.com', 'via.placeholder.com', 'picsum.photos'].includes(urlObj.hostname)
+      
+      return (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') && 
+             (hasValidExtension || isUnsplash || isValidImageHost)
+    } catch (_) {
+      return false
+    }
   }
 
   generateTitleFromUrl(url) {

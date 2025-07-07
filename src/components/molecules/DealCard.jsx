@@ -16,7 +16,7 @@ const DealCard = ({ deal, onView, onExternalLink, className = '' }) => {
       className={`bg-surface rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer ${className}`}
       onClick={onView}
 >
-      <div className="relative">
+<div className="relative">
         <img 
           src={deal.thumbnail || `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`} 
           alt={deal.title}
@@ -27,9 +27,10 @@ const DealCard = ({ deal, onView, onExternalLink, className = '' }) => {
         <div className="absolute top-4 right-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-medium">
           {deal.source || 'LTD Hunt'}
         </div>
-        {!deal.thumbnail && (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-            <ApperIcon name="Image" className="w-12 h-12 text-gray-400" />
+        {(!deal.thumbnail || deal.thumbnail === `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`) && (
+          <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+            <ApperIcon name="Image" className="w-3 h-3 inline mr-1" />
+            Auto-generated
           </div>
         )}
       </div>

@@ -107,20 +107,11 @@ const toggleRssSchedule = (enabled, interval = 60) => {
     }
 }
 
-  const parseUrlForDealInfo = async (url) => {
+const parseUrlForDealInfo = async (url) => {
     try {
-      // Mock URL parsing - in real implementation, this would call dealService.parseUrl
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      const mockParsedData = {
-        title: 'Parsed Deal Title from URL',
-        description: 'Automatically extracted description from the webpage content.',
-        source: 'Auto-detected Source',
-        category: 'Technology',
-        thumbnail: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      }
-      
-      return mockParsedData
+      // Use the enhanced dealService.fetchUrlData method
+      const parsedData = await dealService.fetchUrlData(url)
+      return parsedData
     } catch (err) {
       throw new Error('Failed to parse URL')
     }
