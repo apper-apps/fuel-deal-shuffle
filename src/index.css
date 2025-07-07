@@ -67,8 +67,26 @@ h1, h2, h3, h4, h5, h6 {
 .glow-on-hover:hover {
   box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
 }
+/* Utility classes for responsive design */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
+.scrollable-container {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Touch-friendly targets for mobile */
 @media (max-width: 768px) {
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
   .Toastify__toast-container {
     width: 100vw;
     padding: 0 16px;
@@ -76,5 +94,15 @@ h1, h2, h3, h4, h5, h6 {
   
   .Toastify__toast {
     margin-bottom: 8px;
+  }
+  
+  /* Ensure all containers can scroll */
+  body, html {
+    overflow-x: hidden;
+  }
+  
+  .overflow-container {
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }

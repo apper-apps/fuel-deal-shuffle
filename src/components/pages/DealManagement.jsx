@@ -276,14 +276,15 @@ if (loading) return <Loading />
                           )}
                         </div>
                       </div>
-                    </div>
+</div>
 
-<div className="flex items-center space-x-2 ml-4">
+                    <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => window.open(deal.url, '_blank')}
-                        className="p-2"
+                        className="p-3 min-w-[44px] min-h-[44px] sm:p-2 sm:min-w-0 sm:min-h-0"
+                        title="Open Original Deal"
                       >
                         <ApperIcon name="ExternalLink" className="w-4 h-4" />
                       </Button>
@@ -291,7 +292,8 @@ if (loading) return <Loading />
                         variant="danger"
                         size="sm"
                         onClick={() => handleDeleteDeal(deal.Id)}
-                        className="p-2"
+                        className="p-3 min-w-[44px] min-h-[44px] sm:p-2 sm:min-w-0 sm:min-h-0"
+                        title="Delete Deal"
                       >
                         <ApperIcon name="Trash2" className="w-4 h-4" />
                       </Button>

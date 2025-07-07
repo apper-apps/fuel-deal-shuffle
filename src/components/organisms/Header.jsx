@@ -1,8 +1,9 @@
-import React from 'react'
-import Logo from '@/components/atoms/Logo'
-import ViewToggle from '@/components/molecules/ViewToggle'
-import NavigationControls from '@/components/molecules/NavigationControls'
-import UserDropdown from '@/components/molecules/UserDropdown'
+import React from "react";
+import ApperIcon from "@/components/ApperIcon";
+import Logo from "@/components/atoms/Logo";
+import UserDropdown from "@/components/molecules/UserDropdown";
+import NavigationControls from "@/components/molecules/NavigationControls";
+import ViewToggle from "@/components/molecules/ViewToggle";
 
 const Header = ({ 
   viewMode, 
@@ -41,7 +42,18 @@ const Header = ({
             <ViewToggle 
               viewMode={viewMode} 
               onToggle={onViewToggle} 
-            />
+/>
+            
+            <button
+              onClick={() => window.location.href = '/manage'}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 group"
+              title="Manage Deals"
+            >
+              <ApperIcon 
+                name="Settings" 
+                className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors duration-200" 
+              />
+            </button>
             
             <UserDropdown 
               onBackendToggle={onBackendToggle}
