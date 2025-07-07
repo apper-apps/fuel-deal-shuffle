@@ -136,10 +136,14 @@ if (!isUserDashboard && !location.pathname.startsWith('/manage')) {
                 <ApperIcon name="Menu" className="w-6 h-6" />
               </button>
               
-              <div className="hidden lg:block">
-                <h1 className="font-display text-xl font-semibold text-secondary">
-                  {navigationItems.find(item => isActivePath(item.path))?.name || 'Dashboard'}
-                </h1>
+<div className="hidden lg:block">
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="font-display text-xl font-semibold text-secondary">Dashboard</span>
+                  <ApperIcon name="ChevronRight" className="w-4 h-4 text-gray-400" />
+                  <span className="font-display text-xl font-semibold text-secondary">
+                    {navigationItems.find(item => isActivePath(item.path))?.name || 'Home'}
+                  </span>
+                </div>
               </div>
             </div>
 <div className="flex items-center space-x-4">

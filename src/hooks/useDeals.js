@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
-import { dealService } from '@/services/api/dealService'
+import { useEffect, useState } from "react";
+import Error from "@/components/ui/Error";
+import { dealService } from "@/services/api/dealService";
 
 export const useDeals = () => {
   const [deals, setDeals] = useState([])
@@ -104,6 +105,25 @@ const toggleRssSchedule = (enabled, interval = 60) => {
     } catch (err) {
       throw new Error('Failed to bulk update deals')
     }
+}
+
+  const parseUrlForDealInfo = async (url) => {
+    try {
+      // Mock URL parsing - in real implementation, this would call dealService.parseUrl
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      const mockParsedData = {
+        title: 'Parsed Deal Title from URL',
+        description: 'Automatically extracted description from the webpage content.',
+        source: 'Auto-detected Source',
+        category: 'Technology',
+        thumbnail: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      }
+      
+      return mockParsedData
+    } catch (err) {
+      throw new Error('Failed to parse URL')
+    }
   }
 
   return {
@@ -118,6 +138,7 @@ const toggleRssSchedule = (enabled, interval = 60) => {
     toggleRssSchedule,
     updateRssStatus,
     updateAffiliateLink,
-    bulkUpdateDeals
+    bulkUpdateDeals,
+    parseUrlForDealInfo
   }
 }
