@@ -5,7 +5,7 @@ import DealSlider from "@/components/organisms/DealSlider";
 import DealFrame from "@/components/organisms/DealFrame";
 import BackendPanel from "@/components/organisms/BackendPanel";
 import Header from "@/components/organisms/Header";
-import DealCard from "@/components/organisms/DealCard";
+import DealCard from "@/components/molecules/DealCard";
 import Empty from "@/components/ui/Empty";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
@@ -21,10 +21,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [masonryColumns, setMasonryColumns] = useState(3)
-
-  useEffect(() => {
-    loadDeals()
-  }, [])
 
 const loadDeals = async () => {
     try {
@@ -42,6 +38,10 @@ const loadDeals = async () => {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadDeals()
+  }, [])
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
@@ -89,13 +89,13 @@ const loadDeals = async () => {
     toast.info('Profile editing feature coming soon!')
   }
 
-  const handleDealsUpdate = () => {
+const handleDealsUpdate = () => {
     loadDeals()
   }
-const currentDeal = deals[currentIndex]
+
+  const currentDeal = deals[currentIndex]
   const processedDeals = deals || []
 
-  if (loading) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -184,10 +184,10 @@ const currentDeal = deals[currentIndex]
         canGoBack={currentIndex > 0}
         canGoForward={currentIndex < deals.length - 1}
         onBackendToggle={handleBackendToggle}
-        onProfileEdit={handleProfileEdit}
+onProfileEdit={handleProfileEdit}
       />
 
-<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {viewMode === 'cards' ? (
           <DealSlider
             deals={deals}
