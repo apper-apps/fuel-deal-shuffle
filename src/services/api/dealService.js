@@ -146,6 +146,75 @@ isValidUrl(string) {
     }
   }
 
+  async fetchUrlData(url) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!this.isValidUrl(url)) {
+          reject(new Error('Invalid URL format'))
+          return
+        }
+
+        // Simulate URL parsing and data extraction
+        const domain = new URL(url).hostname
+        const mockData = {
+          title: this.generateTitleFromUrl(url),
+          description: this.generateDescriptionFromUrl(url),
+          source: this.getSourceFromDomain(domain),
+          thumbnail: `https://images.unsplash.com/photo-${Date.now() % 1000000}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
+          affiliateLink: ''
+        }
+
+        resolve(mockData)
+      }, 1000) // Simulate network delay
+    })
+  }
+
+  generateTitleFromUrl(url) {
+    const urlObj = new URL(url)
+    const pathname = urlObj.pathname
+    
+    // Extract potential title from URL path
+    const segments = pathname.split('/').filter(Boolean)
+    if (segments.length > 0) {
+      const lastSegment = segments[segments.length - 1]
+      return lastSegment
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase())
+        .replace(/\.(html|php|asp|jsp)$/i, '')
+    }
+    
+    return `Deal from ${urlObj.hostname}`
+  }
+
+  generateDescriptionFromUrl(url) {
+    const urlObj = new URL(url)
+    const domain = urlObj.hostname
+    
+    // Generate description based on domain patterns
+    if (domain.includes('amazon')) {
+      return 'Great product deal with fast shipping and reliable customer service.'
+    } else if (domain.includes('ebay')) {
+      return 'Auction or buy-it-now deal with competitive pricing.'
+    } else if (domain.includes('walmart') || domain.includes('target')) {
+      return 'Retail deal with store pickup or delivery options available.'
+    } else {
+      return `Exclusive deal found on ${domain}. Check it out for limited-time savings.`
+    }
+  }
+
+  getSourceFromDomain(domain) {
+    if (domain.includes('amazon')) return 'Amazon'
+    if (domain.includes('ebay')) return 'eBay'
+    if (domain.includes('walmart')) return 'Walmart'
+    if (domain.includes('target')) return 'Target'
+    if (domain.includes('bestbuy')) return 'Best Buy'
+    
+    // Extract main domain name
+    const parts = domain.split('.')
+    const mainDomain = parts.length > 2 ? parts[parts.length - 2] : parts[0]
+    return mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1)
+  }
+
   async searchDeals(query, filters = {}) {
     return new Promise((resolve) => {
       setTimeout(() => {

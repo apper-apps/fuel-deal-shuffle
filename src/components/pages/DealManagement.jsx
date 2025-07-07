@@ -22,7 +22,7 @@ const DealManagement = () => {
     bulkUpdateDeals
   } = useDeals()
   
-  const [searchQuery, setSearchQuery] = useState('')
+const [searchQuery, setSearchQuery] = useState('')
   const [selectedDeals, setSelectedDeals] = useState([])
   const [filterSource, setFilterSource] = useState('all')
   const [showAffiliateOnly, setShowAffiliateOnly] = useState(false)
@@ -36,6 +36,9 @@ const DealManagement = () => {
   })
   const [editingLinks, setEditingLinks] = useState({})
   const [pendingLinks, setPendingLinks] = useState({})
+  const [fetchedData, setFetchedData] = useState(null)
+  const [showAllFields, setShowAllFields] = useState(false)
+  const [fetchingUrl, setFetchingUrl] = useState(false)
 const filteredDeals = deals.filter(deal => {
     const matchesSearch = deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          deal.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -45,6 +48,34 @@ const filteredDeals = deals.filter(deal => {
     return matchesSearch && matchesSource && matchesAffiliate
   })
 const sources = [...new Set(deals.map(deal => deal.source))]
+
+const handleFetchUrl = async () => {
+    if (!newDeal.url) {
+      toast.warning('Please enter a URL first')
+      return
+    }
+
+    setFetchingUrl(true)
+    try {
+      const { dealService } = await import('@/services/api/dealService')
+      const fetchedInfo = await dealService.fetchUrlData(newDeal.url)
+      
+      setFetchedData(fetchedInfo)
+      setNewDeal(prev => ({
+        ...prev,
+        title: fetchedInfo.title || prev.title,
+        description: fetchedInfo.description || prev.description,
+        source: fetchedInfo.source || prev.source,
+        affiliateLink: fetchedInfo.affiliateLink || prev.affiliateLink
+      }))
+      setShowAllFields(true)
+      toast.success('Information fetched successfully')
+    } catch (error) {
+      toast.error('Failed to fetch URL information')
+    } finally {
+      setFetchingUrl(false)
+    }
+  }
 
   const handleAddDeal = async (e) => {
     e.preventDefault()
@@ -56,7 +87,7 @@ const sources = [...new Set(deals.map(deal => deal.source))]
     try {
       await createDeal({
         ...newDeal,
-        thumbnail: `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
+        thumbnail: fetchedData?.thumbnail || `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
         fetchedAt: new Date().toISOString(),
         viewCount: 0
       })
@@ -68,6 +99,8 @@ const sources = [...new Set(deals.map(deal => deal.source))]
         affiliateLink: '',
         source: 'Manual Entry'
       })
+      setFetchedData(null)
+      setShowAllFields(false)
       setShowAddForm(false)
     } catch (error) {
       toast.error('Failed to add deal')
@@ -199,98 +232,202 @@ return (
             <ApperIcon name="Plus" className="w-5 h-5 mr-2" />
             Add New Deal
           </h2>
-          <Button
+<Button
             variant={showAddForm ? 'secondary' : 'primary'}
-            onClick={() => setShowAddForm(!showAddForm)}
+            onClick={() => {
+              setShowAddForm(!showAddForm)
+              if (!showAddForm) {
+                setShowAllFields(false)
+                setFetchedData(null)
+                setNewDeal({
+                  title: '',
+                  url: '',
+                  description: '',
+                  affiliateLink: '',
+                  source: 'Manual Entry'
+                })
+              }
+            }}
             size="sm"
           >
             {showAddForm ? 'Cancel' : 'Add Deal'}
           </Button>
         </div>
 
-        {showAddForm && (
-          <form onSubmit={handleAddDeal} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Deal Title *
-                </label>
-                <Input
-                  value={newDeal.title}
-onChange={(e) => setNewDeal(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Enter deal title..."
-                  required
-                />
+{showAddForm && (
+          <div className="space-y-4">
+            {/* Step 1: URL Input */}
+            {!showAllFields && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Deal URL *
+                  </label>
+                  <div className="flex space-x-3">
+                    <Input
+                      type="url"
+                      value={newDeal.url}
+                      onChange={(e) => setNewDeal(prev => ({ ...prev, url: e.target.value }))}
+                      placeholder="https://example.com/deal - Enter URL to fetch information"
+                      required
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={handleFetchUrl}
+                      disabled={!newDeal.url || fetchingUrl}
+                      className="min-w-[120px]"
+                    >
+                      {fetchingUrl ? (
+                        <>
+                          <ApperIcon name="Loader2" className="w-4 h-4 mr-2 animate-spin" />
+                          Fetching...
+                        </>
+                      ) : (
+                        <>
+                          <ApperIcon name="Search" className="w-4 h-4 mr-2" />
+                          Fetch
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Enter a deal URL and click Fetch to automatically extract deal information
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Deal URL (Paste URL to parse automatically) *
-                </label>
-                <Input
-                  type="url"
-                  value={newDeal.url}
-                  onChange={(e) => setNewDeal(prev => ({ ...prev, url: e.target.value }))}
-                  placeholder="https://example.com/deal - Paste any deal URL here"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
-              </label>
-              <textarea
-                value={newDeal.description}
-                onChange={(e) => setNewDeal(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe the deal..."
-                rows={3}
-                className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-1 focus:outline-none transition-all duration-200 bg-white"
-                required
-              />
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Affiliate Link (Optional)
-                </label>
-                <Input
-                  type="url"
-                  value={newDeal.affiliateLink}
-                  onChange={(e) => setNewDeal(prev => ({ ...prev, affiliateLink: e.target.value }))}
-                  placeholder="https://affiliate.example.com/deal"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Source
-                </label>
-                <Input
-                  value={newDeal.source}
-                  onChange={(e) => setNewDeal(prev => ({ ...prev, source: e.target.value }))}
-                  placeholder="Source name"
-                />
-              </div>
-            </div>
+            {/* Step 2: Full Form After Fetch */}
+            {showAllFields && (
+              <form onSubmit={handleAddDeal} className="space-y-4">
+                {fetchedData && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center">
+                      <ApperIcon name="CheckCircle" className="w-5 h-5 text-green-600 mr-2" />
+                      <span className="text-sm font-medium text-green-800">
+                        Information fetched successfully! Review and edit the fields below before saving.
+                      </span>
+                    </div>
+                  </div>
+                )}
 
-            <div className="flex items-center space-x-3 pt-4">
-              <Button
-                type="submit"
-                variant="primary"
-              >
-                <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
-                Add Deal
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowAddForm(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Deal Title *
+                    </label>
+                    <Input
+                      value={newDeal.title}
+                      onChange={(e) => setNewDeal(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Enter deal title..."
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Deal URL *
+                    </label>
+                    <div className="flex space-x-2">
+                      <Input
+                        type="url"
+                        value={newDeal.url}
+                        onChange={(e) => setNewDeal(prev => ({ ...prev, url: e.target.value }))}
+                        placeholder="https://example.com/deal"
+                        required
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => {
+                          setShowAllFields(false)
+                          setFetchedData(null)
+                        }}
+                        size="sm"
+                        title="Change URL"
+                      >
+                        <ApperIcon name="Edit3" className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description *
+                  </label>
+                  <textarea
+                    value={newDeal.description}
+                    onChange={(e) => setNewDeal(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe the deal..."
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-1 focus:outline-none transition-all duration-200 bg-white"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Affiliate Link (Optional)
+                    </label>
+                    <Input
+                      type="url"
+                      value={newDeal.affiliateLink}
+                      onChange={(e) => setNewDeal(prev => ({ ...prev, affiliateLink: e.target.value }))}
+                      placeholder="https://affiliate.example.com/deal"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Source
+                    </label>
+                    <Input
+                      value={newDeal.source}
+                      onChange={(e) => setNewDeal(prev => ({ ...prev, source: e.target.value }))}
+                      placeholder="Source name"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 pt-4">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                  >
+                    <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
+                    Add Deal
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      setShowAllFields(false)
+                      setFetchedData(null)
+                      setNewDeal({
+                        title: '',
+                        url: '',
+                        description: '',
+                        affiliateLink: '',
+                        source: 'Manual Entry'
+                      })
+                    }}
+                  >
+                    Start Over
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowAddForm(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
         )}
       </div>
 
