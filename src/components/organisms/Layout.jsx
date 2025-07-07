@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom'
-import ApperIcon from '@/components/ApperIcon'
-import Button from '@/components/atoms/Button'
-import UserDropdown from '@/components/molecules/UserDropdown'
-import Logo from '@/components/atoms/Logo'
+import React, { useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Logo from "@/components/atoms/Logo";
+import Home from "@/components/pages/Home";
+import UserDropdown from "@/components/molecules/UserDropdown";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -24,11 +25,11 @@ const Layout = () => {
     },
     {
       name: 'Favorites',
-      path: '/user/favorites', 
-      icon: 'Heart'
-    },
-{
-      name: 'Recently Viewed',
+path: '/user/favorites', 
+    icon: 'Heart'
+  },
+  {
+    name: 'Recently Viewed',
       path: '/user/recently-viewed',
       icon: 'Clock'
     },
@@ -141,14 +142,23 @@ if (!isUserDashboard && !location.pathname.startsWith('/manage')) {
                 </h1>
               </div>
             </div>
-
-            <div className="flex items-center space-x-4">
+<div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/manage')}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 group"
+                title="Manage Deals"
+              >
+                <ApperIcon 
+                  name="Sprocket" 
+                  className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors duration-200" 
+                />
+              </button>
               <UserDropdown />
             </div>
-          </div>
-        </header>
+</div>
+      </header>
 
-        {/* Page Content */}
+      {/* Page Content */}
         <main className="flex-1 p-6 overflow-auto">
           <Outlet />
         </main>

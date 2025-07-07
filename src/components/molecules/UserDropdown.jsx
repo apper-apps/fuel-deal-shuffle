@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ApperIcon from '@/components/ApperIcon'
 
-const UserDropdown = ({ onBackendToggle, onProfileEdit }) => {
+const UserDropdown = ({ onProfileEdit }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -55,19 +55,7 @@ const UserDropdown = ({ onBackendToggle, onProfileEdit }) => {
                 </div>
               </div>
             </div>
-            
-            <div className="py-2">
-              <button
-                onClick={() => {
-                  onBackendToggle()
-                  setIsOpen(false)
-                }}
-                className="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors duration-200"
-              >
-                <ApperIcon name="Settings" className="w-4 h-4 text-gray-600" />
-                <span className="text-sm text-secondary">Manage Deals</span>
-              </button>
-              
+<div className="py-2">
               <button
                 onClick={() => {
                   onProfileEdit()
