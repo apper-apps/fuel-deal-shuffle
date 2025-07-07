@@ -26,12 +26,32 @@ class DealService {
     })
   }
 
-  async create(deal) {
-    return new Promise((resolve) => {
+async create(deal) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
+        // Validate required fields
+        if (!deal.title || !deal.url || !deal.description) {
+          reject(new Error('Missing required fields: title, url, and description are required'))
+          return
+        }
+
+        // Validate URL format
+        if (!this.isValidUrl(deal.url)) {
+          reject(new Error('Invalid URL format'))
+          return
+        }
+
+        // Validate affiliate link if provided
+        if (deal.affiliateLink && !this.isValidUrl(deal.affiliateLink)) {
+          reject(new Error('Invalid affiliate link format'))
+          return
+        }
+
         const newDeal = {
           ...deal,
-          Id: Math.max(...this.deals.map(d => d.Id), 0) + 1
+          Id: Math.max(...this.deals.map(d => d.Id), 0) + 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }
         this.deals.push(newDeal)
         resolve({ ...newDeal })
@@ -117,10 +137,10 @@ class DealService {
     })
   }
 
-  isValidUrl(string) {
+isValidUrl(string) {
     try {
-      new URL(string)
-      return true
+      const url = new URL(string)
+      return url.protocol === 'http:' || url.protocol === 'https:'
     } catch (_) {
       return false
     }

@@ -11,7 +11,7 @@ export const useDeals = () => {
     lastRun: null,
     status: 'idle'
   })
-  const loadDeals = async () => {
+const loadDeals = async () => {
     try {
       setLoading(true)
       setError(null)

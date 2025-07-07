@@ -24,7 +24,7 @@ const Home = () => {
     loadDeals()
   }, [])
 
-  const loadDeals = async () => {
+const loadDeals = async () => {
     try {
       setLoading(true)
       setError(null)

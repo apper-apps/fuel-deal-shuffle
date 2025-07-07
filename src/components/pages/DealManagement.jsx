@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDeals } from "@/hooks/useDeals";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
 import FormField from "@/components/molecules/FormField";
@@ -14,18 +15,28 @@ const DealManagement = () => {
     deals, 
     loading, 
     error, 
+    createDeal,
     updateDeal, 
     deleteDeal, 
     updateAffiliateLink,
     bulkUpdateDeals
   } = useDeals()
   
-const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [selectedDeals, setSelectedDeals] = useState([])
   const [filterSource, setFilterSource] = useState('all')
   const [showAffiliateOnly, setShowAffiliateOnly] = useState(false)
-
-  const filteredDeals = deals.filter(deal => {
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newDeal, setNewDeal] = useState({
+    title: '',
+    url: '',
+    description: '',
+    affiliateLink: '',
+    source: 'Manual Entry'
+  })
+  const [editingLinks, setEditingLinks] = useState({})
+  const [pendingLinks, setPendingLinks] = useState({})
+const filteredDeals = deals.filter(deal => {
     const matchesSearch = deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          deal.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesSource = filterSource === 'all' || deal.source === filterSource
@@ -33,8 +44,70 @@ const [searchQuery, setSearchQuery] = useState('')
     
     return matchesSearch && matchesSource && matchesAffiliate
   })
-
 const sources = [...new Set(deals.map(deal => deal.source))]
+
+  const handleAddDeal = async (e) => {
+    e.preventDefault()
+    if (!newDeal.title || !newDeal.url || !newDeal.description) {
+      toast.warning('Please fill in all required fields')
+      return
+    }
+
+    try {
+      await createDeal({
+        ...newDeal,
+        thumbnail: `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
+        fetchedAt: new Date().toISOString(),
+        viewCount: 0
+      })
+      toast.success('Deal added successfully')
+      setNewDeal({
+        title: '',
+        url: '',
+        description: '',
+        affiliateLink: '',
+        source: 'Manual Entry'
+      })
+      setShowAddForm(false)
+    } catch (error) {
+      toast.error('Failed to add deal')
+    }
+  }
+
+  const handleLinkChange = (dealId, linkType, value) => {
+    setPendingLinks(prev => ({
+      ...prev,
+      [dealId]: {
+        ...prev[dealId],
+        [linkType]: value
+      }
+    }))
+    setEditingLinks(prev => ({
+      ...prev,
+      [dealId]: true
+    }))
+  }
+
+  const handleSaveLinks = async (dealId) => {
+    const links = pendingLinks[dealId]
+    if (!links) return
+
+    try {
+      await updateDeal(dealId, {
+        url: links.url !== undefined ? links.url : deals.find(d => d.Id === dealId)?.url,
+        affiliateLink: links.affiliateLink !== undefined ? links.affiliateLink : deals.find(d => d.Id === dealId)?.affiliateLink
+      })
+      toast.success('Links updated successfully')
+      setEditingLinks(prev => ({ ...prev, [dealId]: false }))
+      setPendingLinks(prev => {
+        const newState = { ...prev }
+        delete newState[dealId]
+        return newState
+      })
+    } catch (error) {
+      toast.error('Failed to update links')
+    }
+  }
 
   const handleUpdateAffiliateLink = async (dealId, affiliateLink) => {
     try {
@@ -101,7 +174,7 @@ const sources = [...new Set(deals.map(deal => deal.source))]
 if (loading) return <Loading />
   if (error) return <Error message={error} />
   
-  return (
+return (
     <div className="max-w-7xl mx-auto">
       {/* Stats Header */}
       <div className="mb-8">
@@ -117,6 +190,108 @@ if (loading) return <Loading />
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Add Deal Section */}
+      <div className="bg-surface rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-lg font-semibold text-secondary flex items-center">
+            <ApperIcon name="Plus" className="w-5 h-5 mr-2" />
+            Add New Deal
+          </h2>
+          <Button
+            variant={showAddForm ? 'secondary' : 'primary'}
+            onClick={() => setShowAddForm(!showAddForm)}
+            size="sm"
+          >
+            {showAddForm ? 'Cancel' : 'Add Deal'}
+          </Button>
+        </div>
+
+        {showAddForm && (
+          <form onSubmit={handleAddDeal} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Deal Title *
+                </label>
+                <Input
+                  value={newDeal.title}
+                  onChange={(e) => setNewDeal(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter deal title..."
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Link (Original URL) *
+                </label>
+                <Input
+                  type="url"
+                  value={newDeal.url}
+                  onChange={(e) => setNewDeal(prev => ({ ...prev, url: e.target.value }))}
+                  placeholder="https://example.com/deal"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description *
+              </label>
+              <textarea
+                value={newDeal.description}
+                onChange={(e) => setNewDeal(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe the deal..."
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-1 focus:outline-none transition-all duration-200 bg-white"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Affiliate Link (Optional)
+                </label>
+                <Input
+                  type="url"
+                  value={newDeal.affiliateLink}
+                  onChange={(e) => setNewDeal(prev => ({ ...prev, affiliateLink: e.target.value }))}
+                  placeholder="https://affiliate.example.com/deal"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Source
+                </label>
+                <Input
+                  value={newDeal.source}
+                  onChange={(e) => setNewDeal(prev => ({ ...prev, source: e.target.value }))}
+                  placeholder="Source name"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 pt-4">
+              <Button
+                type="submit"
+                variant="primary"
+              >
+                <ApperIcon name="Plus" className="w-4 h-4 mr-2" />
+                Add Deal
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowAddForm(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        )}
       </div>
 
       {/* Filters and Search */}
@@ -246,48 +421,88 @@ if (loading) return <Loading />
                           {new Date(deal.fetchedAt).toLocaleDateString()}
                         </span>
                       </div>
-
-                      {/* Affiliate Link Section */}
-                      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <label className="text-sm font-medium text-gray-700 block mb-2">
-                          Affiliate Link
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="url"
-                            value={deal.affiliateLink || ''}
-                            onChange={(e) => {
-                              const updatedDeal = { ...deal, affiliateLink: e.target.value }
-                              // Update local state immediately for responsive UI
-                            }}
-                            onBlur={(e) => handleUpdateAffiliateLink(deal.Id, e.target.value)}
-                            placeholder="https://affiliate.example.com/deal/..."
-                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          />
-                          {deal.affiliateLink && (
+{/* Links Management Section */}
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 block mb-2">
+                            Current Link (Original URL)
+                          </label>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="url"
+                              value={pendingLinks[deal.Id]?.url !== undefined ? pendingLinks[deal.Id].url : deal.url}
+                              onChange={(e) => handleLinkChange(deal.Id, 'url', e.target.value)}
+                              placeholder="https://example.com/deal"
+                              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+                            />
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(deal.affiliateLink, '_blank')}
+                              onClick={() => window.open(deal.url, '_blank')}
                               className="p-2"
+                              title="Open Original Deal"
                             >
                               <ApperIcon name="ExternalLink" className="w-4 h-4" />
                             </Button>
-                          )}
+                          </div>
                         </div>
-                      </div>
-</div>
 
-                    <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(deal.url, '_blank')}
-                        className="p-3 min-w-[44px] min-h-[44px] sm:p-2 sm:min-w-0 sm:min-h-0"
-                        title="Open Original Deal"
-                      >
-                        <ApperIcon name="ExternalLink" className="w-4 h-4" />
-                      </Button>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 block mb-2">
+                            Affiliate Link
+                          </label>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="url"
+                              value={pendingLinks[deal.Id]?.affiliateLink !== undefined ? pendingLinks[deal.Id].affiliateLink : (deal.affiliateLink || '')}
+                              onChange={(e) => handleLinkChange(deal.Id, 'affiliateLink', e.target.value)}
+                              placeholder="https://affiliate.example.com/deal..."
+                              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+                            />
+                            {(deal.affiliateLink || pendingLinks[deal.Id]?.affiliateLink) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open(pendingLinks[deal.Id]?.affiliateLink || deal.affiliateLink, '_blank')}
+                                className="p-2"
+                                title="Open Affiliate Link"
+                              >
+                                <ApperIcon name="ExternalLink" className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        {editingLinks[deal.Id] && (
+                          <div className="flex items-center space-x-2 pt-2">
+                            <Button
+                              variant="success"
+                              size="sm"
+                              onClick={() => handleSaveLinks(deal.Id)}
+                            >
+                              <ApperIcon name="Save" className="w-4 h-4 mr-1" />
+                              Save Links
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => {
+                                setEditingLinks(prev => ({ ...prev, [deal.Id]: false }))
+                                setPendingLinks(prev => {
+                                  const newState = { ...prev }
+                                  delete newState[deal.Id]
+                                  return newState
+                                })
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+<div className="flex items-center space-x-2 ml-4 flex-shrink-0">
                       <Button
                         variant="danger"
                         size="sm"
