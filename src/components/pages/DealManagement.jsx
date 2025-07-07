@@ -85,7 +85,7 @@ const handleFetchUrl = async () => {
     }
 
     try {
-      await createDeal({
+await createDeal({
         ...newDeal,
         thumbnail: fetchedData?.thumbnail || `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
         fetchedAt: new Date().toISOString(),
@@ -302,14 +302,20 @@ return (
             {/* Step 2: Full Form After Fetch */}
             {showAllFields && (
               <form onSubmit={handleAddDeal} className="space-y-4">
-                {fetchedData && (
+{fetchedData && (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                     <div className="flex items-center">
                       <ApperIcon name="CheckCircle" className="w-5 h-5 text-green-600 mr-2" />
                       <span className="text-sm font-medium text-green-800">
-                        Information fetched successfully! Review and edit the fields below before saving.
+                        Information fetched successfully! {fetchedData.thumbnail ? 'Thumbnail and content' : 'Content'} extracted. Review and edit the fields below before saving.
                       </span>
                     </div>
+                    {fetchedData.thumbnail && (
+                      <div className="mt-3 flex items-center text-sm text-green-700">
+                        <ApperIcon name="Image" className="w-4 h-4 mr-1" />
+                        <span>Thumbnail image detected and ready to use</span>
+                      </div>
+                    )}
                   </div>
                 )}
 

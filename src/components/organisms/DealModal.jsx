@@ -47,11 +47,12 @@ transition={{ duration: 0.3 }}
                 <ApperIcon name="X" className="w-5 h-5" />
               </button>
               
-              <img 
-                src={deal.thumbnail || 'https://via.placeholder.com/600x300?text=Deal+Image'} 
+<img 
+                src={deal.thumbnail || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} 
                 alt={deal.title}
-                className="w-full h-64 object-cover"
+                className="w-full h-64 object-cover transition-opacity duration-300"
                 onError={handleImageError}
+                loading="lazy"
               />
               
               <div className="absolute bottom-4 right-4 bg-accent text-white px-3 py-1 rounded-full text-sm font-medium">

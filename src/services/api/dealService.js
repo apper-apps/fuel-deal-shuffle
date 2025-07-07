@@ -156,11 +156,18 @@ async fetchUrlData(url) {
 
         // Simulate URL parsing and data extraction
         const domain = new URL(url).hostname
+        const generatedThumbnail = this.generateThumbnailFromUrl(url, domain)
+        
+        // Validate the generated thumbnail
+        const validThumbnail = this.isValidImageUrl(generatedThumbnail) ? 
+          generatedThumbnail : 
+          `https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
+        
         const mockData = {
           title: this.generateTitleFromUrl(url),
           description: this.generateDescriptionFromUrl(url),
           source: this.getSourceFromDomain(domain),
-          thumbnail: this.generateThumbnailFromUrl(url, domain),
+          thumbnail: validThumbnail,
           affiliateLink: ''
         }
 
@@ -169,7 +176,7 @@ async fetchUrlData(url) {
     })
   }
 
-  generateThumbnailFromUrl(url, domain) {
+generateThumbnailFromUrl(url, domain) {
     // Simulate different thumbnail extraction based on domain
     const imageCategories = [
       'photo-1556742049-0cfed4f6a45d', // tech/business
@@ -181,29 +188,31 @@ async fetchUrlData(url) {
       'photo-1574717024653-61fd2cf4d44d'  // video
     ]
     
-    // Select thumbnail based on domain characteristics
+    // Select thumbnail based on domain characteristics with more comprehensive matching
     let selectedImage = imageCategories[0] // default
     
-    if (domain.includes('amazon') || domain.includes('ebay')) {
+    const domainLower = domain.toLowerCase()
+    
+    if (domainLower.includes('amazon') || domainLower.includes('ebay') || domainLower.includes('shop')) {
       selectedImage = imageCategories[0] // business/tech
-    } else if (domain.includes('marketing') || domain.includes('social')) {
+    } else if (domainLower.includes('marketing') || domainLower.includes('social') || domainLower.includes('campaign')) {
       selectedImage = imageCategories[1] // marketing
-    } else if (domain.includes('design') || domain.includes('ui')) {
+    } else if (domainLower.includes('design') || domainLower.includes('ui') || domainLower.includes('creative')) {
       selectedImage = imageCategories[2] // design
-    } else if (domain.includes('analytics') || domain.includes('data')) {
+    } else if (domainLower.includes('analytics') || domainLower.includes('data') || domainLower.includes('stats')) {
       selectedImage = imageCategories[3] // analytics
-    } else if (domain.includes('cloud') || domain.includes('storage')) {
+    } else if (domainLower.includes('cloud') || domainLower.includes('storage') || domainLower.includes('backup')) {
       selectedImage = imageCategories[4] // storage
-    } else if (domain.includes('seo') || domain.includes('content')) {
+    } else if (domainLower.includes('seo') || domainLower.includes('content') || domainLower.includes('blog')) {
       selectedImage = imageCategories[5] // seo
-    } else if (domain.includes('video') || domain.includes('media')) {
+    } else if (domainLower.includes('video') || domainLower.includes('media') || domainLower.includes('stream')) {
       selectedImage = imageCategories[6] // video
     }
     
     return `https://images.unsplash.com/${selectedImage}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
   }
 
-  isValidImageUrl(url) {
+isValidImageUrl(url) {
     if (!url) return false
     try {
       const urlObj = new URL(url)
@@ -212,10 +221,21 @@ async fetchUrlData(url) {
         urlObj.pathname.toLowerCase().endsWith(ext)
       )
       const isUnsplash = urlObj.hostname.includes('unsplash.com')
-      const isValidImageHost = ['images.unsplash.com', 'via.placeholder.com', 'picsum.photos'].includes(urlObj.hostname)
+      const isValidImageHost = [
+        'images.unsplash.com', 
+        'via.placeholder.com', 
+        'picsum.photos',
+        'source.unsplash.com'
+      ].includes(urlObj.hostname)
+      
+      // Check for query parameters that indicate an image service
+      const hasImageParams = urlObj.searchParams.has('w') || 
+                             urlObj.searchParams.has('width') ||
+                             urlObj.searchParams.has('auto') ||
+                             urlObj.pathname.includes('/photo-')
       
       return (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') && 
-             (hasValidExtension || isUnsplash || isValidImageHost)
+             (hasValidExtension || isUnsplash || isValidImageHost || hasImageParams)
     } catch (_) {
       return false
     }
