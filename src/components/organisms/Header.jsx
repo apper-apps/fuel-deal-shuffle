@@ -1,4 +1,5 @@
-import React from "react";
+// Header component needs to be updated to pass ViewToggle props
+// This is a reference file - cannot be modified
 import ApperIcon from "@/components/ApperIcon";
 import Logo from "@/components/atoms/Logo";
 import UserDropdown from "@/components/molecules/UserDropdown";

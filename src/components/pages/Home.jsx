@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
-import Header from '@/components/organisms/Header'
-import DealSlider from '@/components/organisms/DealSlider'
-import DealFrame from '@/components/organisms/DealFrame'
-import DealModal from '@/components/organisms/DealModal'
-import BackendPanel from '@/components/organisms/BackendPanel'
-import Loading from '@/components/ui/Loading'
-import Error from '@/components/ui/Error'
-import Empty from '@/components/ui/Empty'
-import { dealService } from '@/services/api/dealService'
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import DealModal from "@/components/organisms/DealModal";
+import DealSlider from "@/components/organisms/DealSlider";
+import DealFrame from "@/components/organisms/DealFrame";
+import BackendPanel from "@/components/organisms/BackendPanel";
+import Header from "@/components/organisms/Header";
+import DealCard from "@/components/organisms/DealCard";
+import Empty from "@/components/ui/Empty";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import { dealService } from "@/services/api/dealService";
 
 const Home = () => {
   const [deals, setDeals] = useState([])
@@ -19,6 +20,7 @@ const Home = () => {
   const [isBackendOpen, setIsBackendOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [masonryColumns, setMasonryColumns] = useState(3)
 
   useEffect(() => {
     loadDeals()
@@ -90,9 +92,10 @@ const loadDeals = async () => {
   const handleDealsUpdate = () => {
     loadDeals()
   }
+const currentDeal = deals[currentIndex]
+  const processedDeals = deals || []
 
-  const currentDeal = deals[currentIndex]
-
+  if (loading) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -184,7 +187,7 @@ const loadDeals = async () => {
         onProfileEdit={handleProfileEdit}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {viewMode === 'cards' ? (
           <DealSlider
             deals={deals}
@@ -192,6 +195,38 @@ const loadDeals = async () => {
             onDealView={handleDealView}
             onExternalLink={handleExternalLink}
           />
+        ) : viewMode === 'masonry' ? (
+          <div className={`grid gap-6 ${
+            masonryColumns === 2 ? 'grid-cols-1 md:grid-cols-2' :
+            masonryColumns === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+          }`}>
+            {processedDeals.map((deal, index) => (
+              <DealCard
+                key={deal.Id}
+                deal={deal}
+                onView={() => handleDealView(deal)}
+                onExternalLink={handleExternalLink}
+                className={`${
+                  index % 3 === 0 ? 'md:col-span-1' :
+                  index % 3 === 1 ? 'md:col-span-1' :
+                  'md:col-span-1'
+                }`}
+              />
+            ))}
+          </div>
+        ) : viewMode === 'list' ? (
+          <div className="space-y-4">
+            {processedDeals.map((deal) => (
+              <DealCard
+                key={deal.Id}
+                deal={deal}
+                onView={() => handleDealView(deal)}
+                onExternalLink={handleExternalLink}
+                variant="list"
+              />
+            ))}
+          </div>
         ) : (
           <DealFrame
             deal={currentDeal}

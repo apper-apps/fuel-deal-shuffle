@@ -130,6 +130,40 @@ const parseUrlForDealInfo = async (url) => {
     updateRssStatus,
     updateAffiliateLink,
     bulkUpdateDeals,
-    parseUrlForDealInfo
+parseUrlForDealInfo,
+    sortDeals,
+    filterDeals,
+    getCategories
   }
+}
+
+// Utility functions for sorting and filtering
+const sortDeals = (deals, sortBy) => {
+  const sorted = [...deals]
+  
+  switch (sortBy) {
+    case 'newest':
+      return sorted.sort((a, b) => new Date(b.fetchedAt) - new Date(a.fetchedAt))
+    case 'oldest':
+      return sorted.sort((a, b) => new Date(a.fetchedAt) - new Date(b.fetchedAt))
+    case 'featured':
+      return sorted.sort((a, b) => {
+        // Featured deals are those with affiliate links, higher view counts, or specific sources
+        const aFeatured = (a.affiliateLink ? 1 : 0) + (a.viewCount || 0) * 0.01
+        const bFeatured = (b.affiliateLink ? 1 : 0) + (b.viewCount || 0) * 0.01
+        return bFeatured - aFeatured
+      })
+    default:
+      return sorted
+  }
+}
+
+const filterDeals = (deals, category) => {
+  if (category === 'all') return deals
+  return deals.filter(deal => deal.source === category)
+}
+
+const getCategories = (deals) => {
+  const categories = [...new Set(deals.map(deal => deal.source).filter(Boolean))]
+  return categories.sort()
 }
